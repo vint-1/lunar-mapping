@@ -1,8 +1,11 @@
 import cv2 as cv
 import numpy as np
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt, scale
 
-img1 = cv.imread("images/test-2.jpg")
+scale_factor = 8
+moon_img = cv.imread("images/test-2.jpg")
+img1 = cv.resize(moon_img, None, fx=1/scale_factor, fy=1/scale_factor, interpolation=cv.INTER_AREA)
+# img1 = cv.resize(moon_img, None, fx=1/scale_factor, fy=1/scale_factor)
 grayscale = np.mean(img1, axis = 2)
 gradx = cv.Scharr(grayscale,cv.CV_64F,1,0)
 grady = cv.Scharr(grayscale,cv.CV_64F,0,1)
