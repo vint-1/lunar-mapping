@@ -46,7 +46,7 @@ def gen_grad_field(img_shape, ctr, b, theta=0):
 
     return norm_grad
 
-def id_terminator(moon_img, circle_r, circle_ctr, phase_scale_factor=4, theta_steps = 360, a_max = 0, mode = 0):
+def id_terminator(moon_img, circle_r, circle_ctr, phase_scale_factor=4, theta_steps = 360, a_max = 0, mode = 0, debug = False):
 
     """
     mode 0: gradient method
@@ -97,20 +97,21 @@ def id_terminator(moon_img, circle_r, circle_ctr, phase_scale_factor=4, theta_st
     ellipse_a = (ellipse_id[1] + 1 + cent_col) * phase_scale_factor
     ellipse_theta = (ellipse_id[0] + cent_row) * (2*np.pi)/theta_steps
 
-    fig1, axes = plt.subplots(2,3)
-    utility.plotImg(axes, (0,2), peak)
-    if mode == 0:
-        edges = cv.Canny(phase_img.astype('uint8'), 50, 200) * phase_mask
-    utility.plotImg(axes, (0,0), edges)
-    utility.plotImg(axes, (0,1), phase_img)
-    # utility.plotImg(axes, (0,0), ellipse * grad[0])
-    # utility.plotImg(axes, (0,1), ellipse * grad[1])
-    if mode == 1:
-        gradx = cv.Scharr(phase_img,cv.CV_64F,1,0) * phase_mask
-        grady = cv.Scharr(phase_img,cv.CV_64F,0,1) * phase_mask
-    utility.plotImg(axes, (1,0), gradx)
-    utility.plotImg(axes, (1,1), grady)
-    utility.plotImg(axes, (1,2), hough_space)
+    if debug:
+        fig1, axes = plt.subplots(2,3)
+        utility.plotImg(axes, (0,2), peak)
+        if mode == 0:
+            edges = cv.Canny(phase_img.astype('uint8'), 50, 200) * phase_mask
+        utility.plotImg(axes, (0,0), edges)
+        utility.plotImg(axes, (0,1), phase_img)
+        # utility.plotImg(axes, (0,0), ellipse * grad[0])
+        # utility.plotImg(axes, (0,1), ellipse * grad[1])
+        if mode == 1:
+            gradx = cv.Scharr(phase_img,cv.CV_64F,1,0) * phase_mask
+            grady = cv.Scharr(phase_img,cv.CV_64F,0,1) * phase_mask
+        utility.plotImg(axes, (1,0), gradx)
+        utility.plotImg(axes, (1,1), grady)
+        utility.plotImg(axes, (1,2), hough_space)
 
     return ellipse_a, ellipse_theta
 
@@ -136,7 +137,7 @@ if __name__ == "__main__":
 
 
     t2 = time.time()
-    ellipse_a, ellipse_theta = id_terminator(moon_img, circle_r, circle_ctr, phase_scale_factor=8, mode =1)
+    ellipse_a, ellipse_theta = id_terminator(moon_img, circle_r, circle_ctr, phase_scale_factor=8, mode =1, debug=True)
     # ellipse_a, ellipse_theta = id_terminator(np.minimum(255,100*moon_img), circle_r, circle_ctr, phase_scale_factor=4)
     t3 = time.time()
     print("Ellipse found:", "{:.2f}".format(ellipse_a), "{:.2f}".format(np.degrees(ellipse_theta)))
